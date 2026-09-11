@@ -153,26 +153,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .small{font-style:italic;font-size:3.9cqw;color:#4a6078;margin-top:2.4cqw}
 .ln{opacity:0}
 .on .ln{animation:lineIn .9s var(--d,.8s) ease-out both}
-@keyframes lineIn{from{opacity:0;filter:blur(6px);transform:translateY(8px)}to{opacity:1;filter:none;transform:none}}
+@keyframes lineIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .smoke .word{display:inline-block;white-space:nowrap}
 .smoke .word span{display:inline-block;opacity:0}
 .on .smoke .word span{animation:smoke 1.1s var(--d) ease-out both}
-@keyframes smoke{from{opacity:0;filter:blur(8px);transform:translateY(60%) scale(1.3)}to{opacity:1;filter:none;transform:none}}
-
-.turn-hint{
-  position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 1.6cqh);
-  text-align:center;font-style:italic;font-size:3.8cqw;color:var(--paper);
-  text-shadow:0 1px 8px #13324F,0 0 2px #13324F;opacity:0;pointer-events:none;
-}
-.on .turn-hint{animation:fadeIn 1s 3s both, blink 2.6s 4s ease-in-out infinite}
+@keyframes smoke{from{opacity:0;transform:translateY(60%) scale(1.4)}60%{opacity:.7}to{opacity:1;transform:none}}
 
 /* page 0: parchment */
 .story{
   position:absolute;left:13cqw;right:13cqw;top:calc(env(safe-area-inset-top) + 13cqh);
   font-size:5.2cqw;line-height:1.55;color:#243d57;text-align:left;
 }
-.story .w{opacity:0;transition:opacity .5s,filter .5s;filter:blur(3px)}
-.story .w.in{opacity:1;filter:none}
+.story .w{opacity:0;transition:opacity .5s}
+.story .w.in{opacity:1}
 .drop{
   float:left;font:400 17cqw/.8 "Berkshire",serif;color:var(--rose);
   margin:1.4cqw 2.4cqw 0 0;text-shadow:2px 2px 0 var(--gold);
@@ -244,7 +237,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 #fx{position:absolute;inset:0;width:100%;height:100%;z-index:30;pointer-events:none}
 #mute{
-  position:absolute;z-index:40;right:3.5cqw;bottom:calc(env(safe-area-inset-bottom) + 1.2cqh);
+  position:absolute;z-index:40;left:calc(50% - 5.5cqw);bottom:calc(env(safe-area-inset-bottom) + 1.6cqh);
   width:11cqw;height:11cqw;border-radius:50%;display:none;place-items:center;
   background:#13324Fcc;box-shadow:inset 0 0 0 1.5px var(--gold);
 }
@@ -253,10 +246,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #mute.off .x{display:inline}
 #mute.off .wave{display:none}
 .shown #mute{display:grid}
+#nav{position:absolute;z-index:40;left:3.5cqw;right:3.5cqw;bottom:calc(env(safe-area-inset-bottom) + 1.6cqh);display:none;justify-content:space-between;pointer-events:none}
+.shown #nav{display:flex}
+.navbtn{
+  pointer-events:auto;display:flex;align-items:center;gap:1.4cqw;height:11cqw;padding:0 4.6cqw;border-radius:99px;
+  font-style:italic;font-size:4.6cqw;color:var(--paper);background:#13324Fd9;
+  box-shadow:inset 0 0 0 1.5px var(--gold),0 1cqw 3cqw #0004;transition:opacity .3s;
+}
+.navbtn svg{width:4cqw;height:4cqw;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.navbtn.primary{background:var(--gold);color:var(--midnight);box-shadow:0 1cqw 3cqw #0005;animation:nudge 2.6s 2s ease-in-out infinite}
+@keyframes nudge{0%,70%,100%{transform:none}80%{transform:translateX(1.4cqw)}90%{transform:none}}
+.navbtn.off{opacity:0;pointer-events:none}
 
 @media (prefers-reduced-motion:reduce){
   .on .pop{animation:fadeIn .6s var(--d,0s) both}
-  .book-wrap,.hint,.on .turn-hint{animation:none}
+  .book-wrap,.hint,.navbtn.primary{animation:none}
   .turn-out{animation:fadeOut .5s forwards}
   .turn-in{animation:fadeIn .5s both}
   .on .walker,.fly1,.fly2{animation:none;opacity:0}
@@ -279,7 +283,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="actor" style="left:-3cqw;bottom:6cqh;width:40cqw"><span class="j tap" data-boop><img class="pop" style="--d:.2s" src="img/elf.webp" alt="A little elf telling the story"></span></div>
       <div class="actor" style="right:0;bottom:8cqh;width:38cqw"><span class="j tap" data-boop><img class="pop" style="--d:.5s;--br:-1deg" src="img/fairy.webp" alt="A forest fairy"></span></div>
       <div class="pixie fly1"><img src="img/pixie.webp" alt=""></div>
-      <p class="turn-hint" style="color:#6b5a3a;text-shadow:none">Tap to turn the page</p>
     </section>
 
     <!-- 1: dragon -->
@@ -291,7 +294,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <p class="mid ln" style="--d:1.5s">is turning three!</p>
       </div>
       <div class="actor" id="dragon" style="left:10cqw;bottom:13cqh;width:44cqw"><span class="j tap" data-boop="dragon"><img class="pop" style="--d:.4s" src="img/dragon.webp" alt="A baby dragon"></span></div>
-      <p class="turn-hint">Tap to turn the page</p>
     </section>
 
     <!-- 2: witch -->
@@ -304,7 +306,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <p class="small ln" style="--d:3.6s">Fifteen magic minutes at the end of class.</p>
       </div>
       <div class="actor" id="witch" style="left:22cqw;bottom:7cqh;width:54cqw"><span class="j tap" data-boop><img class="pop" style="--d:.4s;--br:-1deg" src="img/witch.webp" alt="A kind witch stirring a cauldron"></span></div>
-      <p class="turn-hint">Tap to turn the page</p>
     </section>
 
     <!-- 3: centaur -->
@@ -319,7 +320,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="walker" style="--d:2s"><img src="img/dwarf.webp" alt="A dwarf with a lantern"></div>
       <div class="walker" style="--d:3.6s;width:15cqw"><img src="img/gnome.webp" alt="A gnome with a mushroom umbrella"></div>
       <div class="actor" style="left:2cqw;bottom:5cqh;width:56cqw"><span class="j tap" data-boop><img class="pop" style="--d:.5s" src="img/centaur.webp" alt="A centaur pointing the way"></span></div>
-      <p class="turn-hint">Tap to turn the page</p>
     </section>
 
     <!-- 4: giant -->
@@ -327,11 +327,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <img class="bg" src="img/bg-giant.webp" alt="">
       <div class="panel">
         <p class="say">The gentle giant has one important thing to say.</p>
-        <p class="mid ln" style="--d:1.1s;color:var(--midnight);font-size:5cqw">Berry would love all her friends to come. She has fairy wings waiting for every friend who joins the party!</p>
+        <p class="mid ln" style="--d:1.1s;color:var(--midnight);font-size:5cqw">Berry would love all her friends to come. There is a surprise for everyone: fairy wings for the girls and masks for the boys!</p>
       </div>
-      <div class="actor giant"><span class="j tap" data-boop><span class="pop" style="--d:.5s;--bt:5s;display:block;position:relative"><img src="img/giant.webp" alt="A gentle giant holding a sign that says wings for everyone"><span class="board">Wings for<br>everyone!</span></span></span></div>
+      <div class="actor giant"><span class="j tap" data-boop><span class="pop" style="--d:.5s;--bt:5s;display:block;position:relative"><img src="img/giant.webp" alt="A gentle giant holding a sign that says a surprise for everyone"><span class="board">A surprise for<br>everyone!</span></span></span></div>
       <div class="bridge-hole"><img class="troll tap" id="troll" src="img/troll.webp" alt="A shy troll peeking from under the bridge"></div>
-      <p class="turn-hint">Tap to turn the page</p>
     </section>
 
     <!-- 5: finale -->
@@ -349,9 +348,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         </div>
         <div class="after">
           <p class="big" style="margin-top:0">Happy 3rd birthday, Berry!</p>
-          <p class="info">Tuesday, 15 September 2026<br>12:45 to 1:00 pm<br>Sparks Pre School, N2 Adventure class<br><strong>Come and get your fairy wings!</strong></p>
+          <p class="info">Tuesday, 15 September 2026<br>12:45 to 1:00 pm<br>Sparks Pre School, N2 Adventure class<br><strong>Come and get your surprise!</strong></p>
           <div class="btns">
-            <a class="btn" id="cal" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Berry%27s%203rd%20birthday&dates=20260915T124500/20260915T130000&location=Sparks%20Pre%20School%2C%20N2%20Adventure%20class&details=Berry%20has%20a%20pair%20of%20fairy%20wings%20for%20every%20friend%20who%20comes." target="_blank" rel="noopener">Add to calendar</a>
+            <a class="btn" id="cal" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Berry%27s%203rd%20birthday&dates=20260915T124500/20260915T130000&location=Sparks%20Pre%20School%2C%20N2%20Adventure%20class&details=A%20surprise%20for%20every%20friend%3A%20fairy%20wings%20for%20the%20girls%2C%20masks%20for%20the%20boys." target="_blank" rel="noopener">Add to calendar</a>
             <button class="btn ghost" id="again">Read it again</button>
           </div>
         </div>
@@ -398,6 +397,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <button id="mute" aria-label="Mute music">
     <svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#F6ECD6" stroke="none"/><path class="wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg>
   </button>
+  <nav id="nav">
+    <button class="navbtn off" id="prev" aria-label="Previous page"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back</button>
+    <button class="navbtn primary" id="next" aria-label="Next page">Next<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  </nav>
   <audio id="song" src="audio/song.mp3" preload="auto" loop></audio>
 </div>
 
@@ -616,6 +619,8 @@ function enter(n){
   const p = pages[n];
   p.classList.remove('on'); void p.offsetWidth; p.classList.add('on');
   enteredAt = performance.now();
+  $('#prev').classList.toggle('off', n === 0);
+  $('#next').classList.toggle('off', n === pages.length - 1);
   scenes[p.dataset.scene]?.();
 }
 function go(n){
@@ -686,6 +691,10 @@ $('#seal').addEventListener('click', e => {
   setTimeout(() => { $('#cover').classList.add('gone'); app.classList.add('shown'); cur = 0; enter(0); }, 1700);
   setTimeout(() => $('#cover').remove(), 2700);
 }, { once:true });
+
+/* back / next buttons */
+$('#prev').addEventListener('click', e => { e.stopPropagation(); go(cur - 1); });
+$('#next').addEventListener('click', e => { e.stopPropagation(); go(cur + 1); });
 
 /* mute */
 $('#mute').addEventListener('click', e => {
