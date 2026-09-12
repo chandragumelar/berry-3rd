@@ -54,8 +54,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 #app{
   position:relative;overflow:hidden;
-  width:min(100vw,480px,56.25 * var(--vh, 1dvh));
-  height:calc(var(--vh, 1dvh) * 100);
+  width:min(100vw,480px,56.25 * var(--vh, 1svh));
+  height:calc(var(--vh, 1svh) * 100);
   container-type:size;
   background:var(--midnight);
   box-shadow:0 0 80px #0006;
@@ -116,9 +116,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .opening .lid{transform:rotateY(-172deg)}
 .opening .book-wrap{animation:none;transform:translate(-50%,-50%) scale(3.4)}
 .hint{
-  position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 7cqh);
-  text-align:center;font-style:italic;font-size:4.6cqw;color:var(--paper);
-  text-shadow:0 2px 10px #13324F;animation:fadeIn 1s 1.4s both, blink 2.4s 2.4s ease-in-out infinite;
+  position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 7cqh);
+  text-align:center;font-style:italic;font-size:4.4cqw;white-space:nowrap;color:var(--midnight);
+  padding:2.2cqw 6cqw;border-radius:99px;background:var(--gold);
+  box-shadow:0 1cqw 3cqw #0005;animation:fadeIn 1s 1.4s both, blink 2.4s 2.4s ease-in-out infinite;
 }
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes blink{50%{opacity:.45}}
@@ -234,7 +235,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 #fx{position:absolute;inset:0;width:100%;height:100%;z-index:30;pointer-events:none}
 #mute{
-  position:absolute;z-index:40;left:calc(50% - 5.5cqw);bottom:calc(env(safe-area-inset-bottom) + 1.6cqh);
+  position:absolute;z-index:40;left:calc(50% - 5.5cqw);bottom:calc(env(safe-area-inset-bottom) + 2.6cqh);
   width:11cqw;height:11cqw;border-radius:50%;display:none;place-items:center;
   background:#13324Fcc;box-shadow:inset 0 0 0 1.5px var(--gold);
 }
@@ -243,7 +244,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #mute.off .x{display:inline}
 #mute.off .wave{display:none}
 .shown #mute{display:grid}
-#nav{position:absolute;z-index:40;left:3.5cqw;right:3.5cqw;bottom:calc(env(safe-area-inset-bottom) + 1.6cqh);display:none;justify-content:space-between;pointer-events:none}
+#nav{position:absolute;z-index:40;left:3.5cqw;right:3.5cqw;bottom:calc(env(safe-area-inset-bottom) + 2.6cqh);display:none;justify-content:space-between;pointer-events:none}
 .shown #nav{display:flex}
 .navbtn{
   pointer-events:auto;display:flex;align-items:center;gap:1.4cqw;height:11cqw;padding:0 4.6cqw;border-radius:99px;
@@ -407,10 +408,19 @@ const $ = s => document.querySelector(s);
 
 /* iOS Safari reports a taller dvh than it actually paints once the toolbars
    settle, so measure the real visual viewport and drive the layout from it. */
+let minH = Infinity;
 function setVH(){
-  const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-  document.documentElement.style.setProperty('--vh', (h/100) + 'px');
+  const vv = window.visualViewport;
+  const cands = [window.innerHeight, document.documentElement.clientHeight];
+  if (vv) cands.push(vv.height);
+  const h = Math.min(...cands.filter(v => v > 200));
+  if (!isFinite(h)) return;
+  /* iOS Chrome and Safari both over-report height while the toolbars are still
+     sliding; keep the smallest height seen so nothing ends up under a toolbar. */
+  minH = Math.min(minH, h);
+  document.documentElement.style.setProperty('--vh', (minH/100) + 'px');
 }
+addEventListener('orientationchange', () => { minH = Infinity; });
 setVH();
 addEventListener('resize', setVH);
 addEventListener('orientationchange', () => setTimeout(setVH, 250));
@@ -418,7 +428,9 @@ if (window.visualViewport){
   visualViewport.addEventListener('resize', setVH);
   visualViewport.addEventListener('scroll', setVH);
 }
-setTimeout(setVH, 300); setTimeout(setVH, 900); setTimeout(setVH, 2000);
+[100,300,600,1000,1600,2400,3500].forEach(t => setTimeout(setVH, t));
+addEventListener('load', setVH);
+document.addEventListener('visibilitychange', setVH);
 const app = $('#app');
 const pages = [...document.querySelectorAll('.page')];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
