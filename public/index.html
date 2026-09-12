@@ -34,7 +34,7 @@
   --gold-ink:#8A6718;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--midnight);overflow:hidden;overscroll-behavior:none}
+html,body{height:100%;background:var(--midnight);overflow:hidden;overscroll-behavior:none;position:fixed;inset:0;width:100%;touch-action:manipulation}
 body{
   display:grid;place-items:center;
   font-family:"Fell",Georgia,serif;color:var(--midnight);
@@ -54,8 +54,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 #app{
   position:relative;overflow:hidden;
-  width:min(100vw,480px,56.25dvh);
-  height:100dvh;
+  width:min(100vw,480px,56.25 * var(--vh, 1dvh));
+  height:calc(var(--vh, 1dvh) * 100);
   container-type:size;
   background:var(--midnight);
   box-shadow:0 0 80px #0006;
@@ -404,6 +404,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <script>
 (() => {
 const $ = s => document.querySelector(s);
+
+/* iOS Safari reports a taller dvh than it actually paints once the toolbars
+   settle, so measure the real visual viewport and drive the layout from it. */
+function setVH(){
+  const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  document.documentElement.style.setProperty('--vh', (h/100) + 'px');
+}
+setVH();
+addEventListener('resize', setVH);
+addEventListener('orientationchange', () => setTimeout(setVH, 250));
+if (window.visualViewport){
+  visualViewport.addEventListener('resize', setVH);
+  visualViewport.addEventListener('scroll', setVH);
+}
+setTimeout(setVH, 300); setTimeout(setVH, 900); setTimeout(setVH, 2000);
 const app = $('#app');
 const pages = [...document.querySelectorAll('.page')];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
